@@ -4,23 +4,24 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell.Services.UPower
-import "components"
+import qs.modules.bar.components
+import qs.services
 
 Scope {
-    Variants {
-        model: Quickshell.screens
+	Variants {
+		model: Quickshell.screens
 
-        PanelWindow {
-            required property var modelData
-            property real margin: 5
-            screen: modelData
-            color: "transparent"
+		PanelWindow {
+			required property var modelData
+			property real margin: 5
+			screen: modelData
+			color: "transparent"
 
-            anchors {
-                top: true
-                left: true
-                right: true
-            }
+			anchors {
+				top: true
+				left: true
+				right: true
+			}
 
 			implicitHeight: 30
 
@@ -30,6 +31,7 @@ Scope {
 				anchors.verticalCenter: parent.verticalCenter
 			}
 
+
 			ClockWidget {
 				id: clockWidget
 				anchors.centerIn: parent
@@ -37,23 +39,33 @@ Scope {
 
 			Rectangle {
 				id: container
+
 				color: "white"
 				width: 150
 				radius: 50
 				height: 25
 				anchors.right: parent.right
 				anchors.verticalCenter: parent.verticalCenter
-
-				Text {
-					text: "hello"
-					color: "black"
+				RowLayout{
 					anchors.verticalCenter: parent.verticalCenter
 					anchors.centerIn: parent
-					font.pixelSize: 12
+
+					// Text{
+					// 	text: "hello"
+					// 	color: "black"
+					//
+					// }
+					// Text{
+					// 	text: "heaaaa"
+					// 	color: "black"
+					// }
+
+
+					PowerWidget {
+						id: powerWidget
+					}
 				}
 			}
-
-			// Alternative si UPower n'est pas disponible
 		}
 	}
 }
