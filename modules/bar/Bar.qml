@@ -64,6 +64,11 @@ Scope {
 					PowerWidget {
 						id: powerWidget
 					}
+					Text{
+						text: Network.wifistatus
+						color: "transparent"
+
+					}
 				}
 			}
 		}

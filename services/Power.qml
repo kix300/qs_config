@@ -82,10 +82,4 @@ Singleton {
 		}
 		return status
 	}
-
-	// Component TestWifi qui expose la propriété status
-	component TestWifi: QtObject {
-		required property string status
-	}
-
 }
