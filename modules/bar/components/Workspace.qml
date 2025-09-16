@@ -2,13 +2,16 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell.Hyprland
 import QtQuick.Effects
+import qs.services
 
 // Hyprland workspace indicator
 Rectangle {
     id: container
-    color: "white"
-    radius: 50
+    color: Colors.surface
+    radius: 12
     height: 25
+    border.color: Colors.withOpacity(Colors.overlay, 0.3)
+    border.width: 1
 
     Behavior on width {
         NumberAnimation {
@@ -35,8 +38,8 @@ Rectangle {
                 height: 15
                 radius: 50
                 border.width: 0
-                color: modelData.active ? "black" : "grey"
-                opacity: modelData.active ? 1 : 0.3
+                color: modelData.active ? Colors.text : Colors.muted
+                opacity: modelData.active ? 1 : 0.6
 
                 property bool wasActive: modelData.active
 

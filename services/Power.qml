@@ -43,8 +43,6 @@ Singleton {
             charging = true;
         }
 
-        console.log(charging);
-        console.log(text);
         if (charging == true) {
             status = "󰂄";
         } else if (percentage <= 10) {

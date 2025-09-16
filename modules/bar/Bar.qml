@@ -15,6 +15,7 @@ Scope {
             required property var modelData
             property real margin: 5
             screen: modelData
+            // color: Colors.withOpacity(Colors.background, 0.8)
             color: "transparent"
 
             anchors {
@@ -24,10 +25,14 @@ Scope {
             }
 
             implicitHeight: 30
-            Item {
+            Rectangle {
                 id: bar
                 width: parent.width
                 anchors.verticalCenter: parent.verticalCenter
+                color: Colors.withOpacity(Colors.surface, 0.9)
+                radius: 8
+                border.color: Colors.withOpacity(Colors.overlay, 0.3)
+                border.width: 1
                 Workspace {
                     id: workspace
                     anchors.left: bar.left

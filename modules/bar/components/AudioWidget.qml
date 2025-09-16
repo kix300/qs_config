@@ -9,22 +9,22 @@ Item {
     height: 20
 
     Text {
-        id: networkIcon
+        id: audiIcon
         anchors.centerIn: parent
-        text: Network.icon
-        color: Network.isEthernetConnected ? Colors.pine : Network.connected ? Colors.text : Colors.muted
+        color: Colors.text
+        text: Audio.getVolumeIcon() + " " + Audio.getDeviceIcon()
 
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
             acceptedButtons: Qt.LeftButton
             onClicked: {
-                nmtuiProcess.running = true;
+                pavucontrolProcess.running = true;
             }
         }
     }
     Process {
-        id: nmtuiProcess
-        command: ["ghostty", "-e", "nmtui"]
+        id: pavucontrolProcess
+        command: ["pavucontrol"]
     }
 }
