@@ -1,62 +1,137 @@
 pragma Singleton
+import QtQuick
 import Quickshell
 import Quickshell.Io
-import QtQuick
-
-pragma Singleton
 
 Singleton {
-	id: root
-	property string wifistatus: "default"
-	property string ethernetstatus: "default"
-	// Timer {
-	// 	id: refreshTimer
-	// 	interval: 10000 // 10 sec
-	// 	running: true
-	// 	repeat: true
-	// 	onTriggered: {
-	// 		powerstatus.running = true
-	// 	}
-	// }
+    id: networkService
+    property string activeSsid: ""
+    property bool connected: false
+    property int signal: 0
+    property string wifi: ""
+    property string ethernet: ""
+    property bool isEthernetConnected: false
+    property string icon: "󰤭"
 
-	Process {
-		id: getWifiStatusProc
-		running: true
-		command: ['bash', '-c', 'nmcli device wifi list']
-		//use nmcli for ethernet
-		//use nmcli device wifi list for wifi
+    ListModel {
+        id: wifiModel
+    }
+    Timer {
+        id: refreshTimer
+        interval: 1000
+        running: true
+        repeat: true
+        onTriggered: {
+            wifi: "";
+            ethernet: "";
+            ethernetCommandProc.running = true;
+            wifiCommandProc.running = true;
+        }
+    }
 
-		stdout: StdioCollector {
-			onStreamFinished:{
-				//parsing to get name, signal , rate, in use
-				root.wifistatus = text.trim()
-				console.log(root.wifistatus)
-			}
-		}
-	}
+    function parseEthernet(ethernet) {
+        let isConnected = false;
+        const lines = ethernet.split('\n');
+        const header = lines[0];
 
-	Process { 
-		id: getEthernetStatusProc
-		running: true
-		command: ['bash', '-c', 'nmcli']
-		stdout: StdioCollector{
-			onStreamFinished:{
-				root.ethernetstatus = text.trim()
-				console.log(root.ethernetstatus)
-				checkWifiStatus()
-			}
-		}
-	}
-	function checkWifiStatus(): void{
-		console.log(root.ethernetstatus)
-		console.log(root.wifistatus)
-	}
+        const deviceIndex = header.indexOf("DEVICE");
+        const typeIndex = header.indexOf("TYPE");
+        const stateIndex = header.indexOf("STATE");
 
-	function checkEthernetStatus(ethernet: string){
+        networkService.isEthernetConnected = false;
+        for (let i = 0 + 1; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.includes("ethernet") && line.includes("connected")) {
+                networkService.isEthernetConnected = true;
+            }
+        }
+        // Mettre à jour l'icône après avoir vérifié l'Ethernet
+        networkService.icon = setNetworkIcon();
+    }
 
-	}
+    function parseWifi(wifi, ethernet) {
+        wifiModel.clear();
+        const lines = wifi.split('\n');
 
-	function createIcone(): void{
+        const header = lines[0];
+        const ssidIndex = header.indexOf("SSID");
+        const modeIndex = header.indexOf("MODE");
+        const signalIndex = header.indexOf("SIGNAL");
+        const barsIndex = header.indexOf("BARS");
+        const securityIndex = header.indexOf("SECURITY");
 
-	}
+        let isConnected = false;
+        networkService.activeSsid = "";
+        networkService.connected = false;
+
+        for (let i = 0 + 1; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.trim().length === 0) {
+                continue;
+            }
+
+            const isLineConnected = line.startsWith('*');
+            const ssid = line.substring(ssidIndex + 16, modeIndex).trim();
+            const signal = line.substring(signalIndex, barsIndex).trim();
+
+            if (ssid === '--' || ssid === "") {
+                continue;
+            }
+
+            wifiModel.append({
+                name: ssid,
+                signal: parseInt(signal) || 0,
+                connected: isLineConnected
+            });
+
+            if (isLineConnected) {
+                networkService.activeSsid = ssid;
+                networkService.signal = parseInt(signal) || 0;
+                isConnected = true;
+            }
+        }
+        networkService.connected = isConnected;
+        networkService.icon = setNetworkIcon();
+    }
+
+    function setNetworkIcon(): string {
+        if (isEthernetConnected) {
+            return "󰈀";
+        }
+        if (connected) {
+            if (signal >= 75) {
+                return "󰤨";
+            } else if (signal >= 50) {
+                return "󰤥";
+            } else if (signal >= 25) {
+                return "󰤢";
+            } else if (signal > 0) {
+                return "󰤟";
+            } else {
+                return "󰤯";
+            }
+        }
+        return "󰤭";
+    }
+
+    Process {
+        id: ethernetCommandProc
+        command: ["nmcli", "device", "status"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                ethernet = text.trim();
+                parseEthernet(ethernet);
+            }
+        }
+    }
+    Process {
+        id: wifiCommandProc
+        command: ["nmcli", "dev", "wifi", "list"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                wifi = text.trim();
+                parseWifi(wifi, ethernet);
+            }
+        }
+    }
 }

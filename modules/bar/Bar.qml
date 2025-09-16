@@ -8,69 +8,48 @@ import qs.modules.bar.components
 import qs.services
 
 Scope {
-	Variants {
-		model: Quickshell.screens
+    Variants {
+        model: Quickshell.screens
 
-		PanelWindow {
-			required property var modelData
-			property real margin: 5
-			screen: modelData
-			color: "transparent"
+        PanelWindow {
+            required property var modelData
+            property real margin: 5
+            screen: modelData
+            color: "transparent"
 
-			anchors {
-				top: true
-				left: true
-				right: true
-			}
+            anchors {
+                top: true
+                left: true
+                right: true
+            }
 
-			implicitHeight: 30
+            implicitHeight: 30
+            Item {
+                id: bar
+                width: parent.width
+                anchors.verticalCenter: parent.verticalCenter
+                Workspace {
+                    id: workspace
+                    anchors.left: bar.left
+                    anchors.verticalCenter: bar.verticalCenter
+                    anchors.leftMargin: 10
+                }
+                ClockWidget {
+                    id: clockWidget
+                    anchors.horizontalCenter: bar.horizontalCenter
+                    anchors.verticalCenter: bar.verticalCenter
+                }
+                //widget a part a creer apres
+                SystemWidget {
+                    id: systemtray
+                    anchors.right: bar.right
+                    anchors.verticalCenter: bar.verticalCenter
+                    anchors.rightMargin: 10
 
-			Workspace {
-				id: workspace
-				anchors.left: parent.left
-				anchors.verticalCenter: parent.verticalCenter
-			}
-
-
-			ClockWidget {
-				id: clockWidget
-				anchors.centerIn: parent
-			}
-
-			Rectangle {
-				id: container
-
-				color: "white"
-				width: 150
-				radius: 50
-				height: 25
-				anchors.right: parent.right
-				anchors.verticalCenter: parent.verticalCenter
-				RowLayout{
-					anchors.verticalCenter: parent.verticalCenter
-					anchors.centerIn: parent
-
-					// Text{
-					// 	text: "hello"
-					// 	color: "black"
-					//
-					// }
-					// Text{
-					// 	text: "heaaaa"
-					// 	color: "black"
-					// }
-
-
-					PowerWidget {
-						id: powerWidget
-					}
-					Text{
-						text: Network.wifistatus
-						color: "transparent"
-
-					}
-				}
-			}
-		}
-	}
+                    // Passer la référence du tooltip au SystemWidget
+                    property var tooltipWindow: tooltipWindow
+                }
+            }
+        }
+    }
 }
