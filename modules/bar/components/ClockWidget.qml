@@ -15,7 +15,7 @@ Rectangle {
         color: Colors.text
         text: Time.time
         anchors.centerIn: parent
-        font.pixelSize: 12
+        font.pixelSize: 15
         font.weight: Font.Medium
     }
 }

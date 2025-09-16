@@ -13,6 +13,10 @@ Singleton {
     property string deviceNick: ""
     property string deviceAlias: ""
     property bool muted: false
+    property string activePort: ""
+
+    property int bluetoothBatteryPercentage: -1
+    property bool bluetoothBatteryAvailable: false
 
     Timer {
         id: refreshTimer
@@ -21,6 +25,31 @@ Singleton {
         repeat: true
         onTriggered: {
             audioProcess.running = true;
+            if (deviceBus === "bluetooth") {
+                batteryProcess.running = true;
+            }
+        }
+    }
+
+    Process {
+        id: batteryProcess
+        command: ['sh', '-c', 'upower -i "$(upower -e | grep -E "headset")"']
+
+        stdout: StdioCollector {
+            onTextChanged: {
+                if (text.trim()) {
+                    parseBluetoothBattery(text.trim());
+                }
+            }
+        }
+
+        stderr: StdioCollector {
+            onTextChanged: {
+                if (text.trim()) {
+                    bluetoothBatteryAvailable = false;
+                    bluetoothBatteryPercentage = -1;
+                }
+            }
         }
     }
 
@@ -94,6 +123,22 @@ Singleton {
         if (aliasMatch && aliasMatch[1]) {
             deviceAlias = aliasMatch[1];
         }
+
+        var activePortMatch = sinkData.match(/Active Port:\s*(.+)/);
+        if (activePortMatch && activePortMatch[1]) {
+            activePort = activePortMatch[1].trim();
+        }
+    }
+
+    function parseBluetoothBattery(text) {
+        var percentageMatch = text.match(/percentage:\s*(\d+)%/);
+        if (percentageMatch && percentageMatch[1]) {
+            bluetoothBatteryPercentage = parseInt(percentageMatch[1]);
+            bluetoothBatteryAvailable = true;
+        } else {
+            bluetoothBatteryAvailable = false;
+            bluetoothBatteryPercentage = -1;
+        }
     }
 
     function getVolumeIcon() {
@@ -109,14 +154,46 @@ Singleton {
     }
 
     function getDeviceIcon() {
-        if (deviceBus === "bluetooth" && sinkName.includes("headphone"))
-            return "󰂯";
-        if (deviceBus === "bluetooth") {
-            return "󰋋󰂯";
-        } else if (sinkName.includes("headphone") || deviceNick.toLowerCase().includes("headphone")) {
-            return "󰋋";
+        var baseIcon = "";
+        var portLower = activePort.toLowerCase();
+        var isHeadphones = portLower.includes("headphone") || portLower.includes("headset");
+        var isSpeakers = portLower.includes("speaker") || portLower.includes("output-speaker");
+        var isBluetooth = deviceBus === "bluetooth";
+
+        if (isBluetooth && isHeadphones) {
+            baseIcon = "󰂯";
+        } else if (isBluetooth && !isHeadphones) {
+            baseIcon = "󰋋";
+        } else if (isHeadphones) {
+            baseIcon = "󰋋";
+        } else if (isSpeakers) {
+            baseIcon = "󰓃";
         } else {
-            return "󰓃";
+            baseIcon = "󰓃";
+        }
+
+        if (isBluetooth && bluetoothBatteryAvailable) {
+            baseIcon += " " + getBluetoothBatteryIcon();
+        }
+
+        return baseIcon;
+    }
+
+    function getBluetoothBatteryIcon() {
+        if (!bluetoothBatteryAvailable || bluetoothBatteryPercentage < 0) {
+            return "";
+        }
+
+        if (bluetoothBatteryPercentage <= 10) {
+            return "󰂎";
+        } else if (bluetoothBatteryPercentage <= 25) {
+            return "󰁺";
+        } else if (bluetoothBatteryPercentage <= 50) {
+            return "󰁼";
+        } else if (bluetoothBatteryPercentage <= 75) {
+            return "󰁽";
+        } else {
+            return "󰁹";
         }
     }
 

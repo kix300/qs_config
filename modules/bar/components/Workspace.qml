@@ -96,40 +96,6 @@ Rectangle {
                                 }
                             }
                         }
-                    },
-                    Transition {
-                        from: "*"
-                        to: "becomingInactive"
-                        SequentialAnimation {
-                            ParallelAnimation {
-                                NumberAnimation {
-                                    target: workspace
-                                    property: "scale"
-                                    to: 1.0
-                                    duration: 200
-                                }
-                                NumberAnimation {
-                                    target: workspace
-                                    property: "opacity"
-                                    to: 0.5
-                                    duration: 200
-                                }
-                            }
-                            ParallelAnimation {
-                                NumberAnimation {
-                                    target: workspace
-                                    property: "scale"
-                                    to: 1.0
-                                    duration: 200
-                                }
-                                NumberAnimation {
-                                    target: workspace
-                                    property: "opacity"
-                                    to: 0.3
-                                    duration: 200
-                                }
-                            }
-                        }
                     }
                 ]
 

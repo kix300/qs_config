@@ -44,7 +44,6 @@ Scope {
                     anchors.horizontalCenter: bar.horizontalCenter
                     anchors.verticalCenter: bar.verticalCenter
                 }
-                //widget a part a creer apres
                 SystemWidget {
                     id: systemtray
                     anchors.right: bar.right

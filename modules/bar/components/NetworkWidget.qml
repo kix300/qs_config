@@ -5,8 +5,8 @@ import qs.services
 
 Item {
     id: root
-    width: 20
-    height: 20
+    width: 25
+    height: 25
 
     Text {
         id: networkIcon

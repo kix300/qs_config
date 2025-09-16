@@ -30,7 +30,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.leftMargin: container.leftPadding
         anchors.rightMargin: container.rightPadding
-        spacing: 14
+        spacing: 12
         layoutDirection: Qt.LeftToRight
 
         Text {
@@ -38,7 +38,6 @@ Rectangle {
             Layout.alignment: Qt.AlignVCenter
             color: Colors.text
             text: Power.status
-            font.pixelSize: 14
         }
 
         BrightnessWidget {

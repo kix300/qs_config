@@ -5,24 +5,39 @@ import qs.services
 
 Item {
     id: root
-    width: 20
-    height: 20
+    width: 25
+    height: 25
 
-    Text {
-        id: audiIcon
+    Row {
         anchors.centerIn: parent
-        color: Colors.text
-        text: Audio.getVolumeIcon() + " " + Audio.getDeviceIcon()
+        spacing: 4
 
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            acceptedButtons: Qt.LeftButton
-            onClicked: {
-                pavucontrolProcess.running = true;
+        Text {
+            id: audioIcon
+            anchors.verticalCenter: parent.verticalCenter
+            color: Colors.text
+            text: Audio.getVolumeIcon() + " " + Audio.getDeviceIcon()
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                acceptedButtons: Qt.LeftButton
+                onClicked: {
+                    pavucontrolProcess.running = true;
+                }
             }
         }
+
+        Text {
+            id: batteryText
+            anchors.verticalCenter: parent.verticalCenter
+            color: Audio.bluetoothBatteryPercentage <= 20 ? Colors.love : Colors.text
+            text: Audio.bluetoothBatteryAvailable ? Audio.bluetoothBatteryPercentage + "%" : ""
+            font.pixelSize: 10
+            visible: Audio.bluetoothBatteryAvailable
+        }
     }
+
     Process {
         id: pavucontrolProcess
         command: ["pavucontrol"]
