@@ -45,9 +45,6 @@ Scope {
                     anchors.right: bar.right
                     anchors.verticalCenter: bar.verticalCenter
                     anchors.rightMargin: 10
-
-                    // Passer la référence du tooltip au SystemWidget
-                    property var tooltipWindow: tooltipWindow
                 }
             }
         }

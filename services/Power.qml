@@ -28,7 +28,6 @@ Singleton {
         stdout: StdioCollector {
             onTextChanged: {
                 root.status = setStatus(text.trim());
-                // console.log(root.status)
             }
         }
     }
@@ -38,12 +37,14 @@ Singleton {
             percentage = parseInt(percentageMatch[1]);
         }
 
-        if (text.includes("charging")) {
-            charging = true;
-        } else if (text.includes("discharging")) {
+        if (text.includes("discharging")) {
             charging = false;
+        } else if (text.includes("charging")) {
+            charging = true;
         }
 
+        console.log(charging);
+        console.log(text);
         if (charging == true) {
             status = "󰂄";
         } else if (percentage <= 10) {
